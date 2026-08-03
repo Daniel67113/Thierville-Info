@@ -199,3 +199,335 @@ setInterval(afficher,15000);
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Info Verdun TV</title>
+
+<style>
+
+* {
+    box-sizing:border-box;
+}
+
+body {
+    margin:0;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    font-family:Arial, Helvetica, sans-serif;
+    color:white;
+
+    background:
+    linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.75)),
+    url("https://images.unsplash.com/photo-1495020689067-958852a7765e")
+    center/cover no-repeat;
+}
+
+
+.ecran {
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+
+/* Bandeau haut */
+
+.header {
+
+    height:15vh;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:0 3vw;
+
+    font-size:4vw;
+    font-weight:bold;
+}
+
+
+
+/* Zone actualité */
+
+.centre {
+
+    flex:1;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+}
+
+
+.carte {
+
+    width:85%;
+
+    background:rgba(0,0,0,.70);
+
+    border-radius:25px;
+
+    padding:5vh 5vw;
+
+    text-align:center;
+
+}
+
+
+.carte h1 {
+
+    font-size:5vw;
+
+    margin-bottom:4vh;
+
+}
+
+
+
+#news {
+
+    font-size:4.2vw;
+
+    line-height:1.25;
+
+    font-weight:bold;
+
+    display:-webkit-box;
+
+    -webkit-line-clamp:2;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+
+}
+
+
+
+/* Bandeau bas */
+
+.footer {
+
+    height:12vh;
+
+    background:#a90000;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:3.5vw;
+
+    font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="ecran">
+
+
+<div class="header">
+
+<div>L'EST RÉPUBLICAIN</div>
+
+<div id="heure">--:--</div>
+
+<div id="meteo">Verdun</div>
+
+</div>
+
+
+
+<div class="centre">
+
+
+<div class="carte">
+
+<h1>ACTUALITÉS VERDUN & MEUSE</h1>
+
+<div id="news">
+Chargement des informations...
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<div class="footer">
+
+VERDUN • MEUSE • LORRAINE
+
+</div>
+
+
+
+</div>
+
+
+
+<script>
+
+
+// HORLOGE
+
+function majHeure(){
+
+let d=new Date();
+
+document.getElementById("heure").innerHTML =
+
+d.toLocaleTimeString("fr-FR",
+{
+hour:"2-digit",
+minute:"2-digit"
+});
+
+}
+
+setInterval(majHeure,1000);
+
+majHeure();
+
+
+
+
+// METEO VERDUN
+
+fetch("https://api.open-meteo.com/v1/forecast?latitude=49.16&longitude=5.38&current_weather=true")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+document.getElementById("meteo").innerHTML =
+
+"🌤 Verdun " + data.current_weather.temperature + "°C";
+
+});
+
+
+
+
+
+// ACTUALITES LOCALES
+
+let articles=[];
+
+let index=0;
+
+
+const motsLocaux=[
+
+"Verdun",
+"Meuse",
+"Bar-le-Duc",
+"Stenay",
+"Commercy",
+"Étain",
+"Vaucouleurs",
+"Clermont-en-Argonne"
+
+];
+
+
+
+fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.estrepublicain.fr/rss")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+
+articles=data.items.filter(article=>{
+
+
+let texte=article.title.toLowerCase();
+
+
+return motsLocaux.some(mot=>
+
+texte.includes(mot.toLowerCase())
+
+);
+
+
+});
+
+
+afficher();
+
+
+});
+
+
+
+
+
+function afficher(){
+
+
+if(articles.length){
+
+
+let titre=articles[index].title;
+
+
+
+if(titre.length>90){
+
+titre=titre.substring(0,90)+"...";
+
+}
+
+
+
+document.getElementById("news").innerHTML=titre;
+
+
+
+index++;
+
+
+
+if(index>=articles.length){
+
+index=0;
+
+}
+
+
+}
+
+}
+
+
+
+setInterval(afficher,15000);
+
+
+
+</script>
+
+
+</body>
+
+</html>
