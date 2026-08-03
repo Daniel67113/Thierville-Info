@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdun Info TV</title>
+
+<style>
+html, body {
+   margin:0;
+   padding:0;
+   height:100%;
+   overflow:hidden;
+   font-family:Arial, sans-serif;
+}
+
+body {
+   background-image:url("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Verdun_-_Quai_de_Londres.jpg/1280px-Verdun_-_Quai_de_Londres.jpg");
+   background-size:cover;
+   background-position:center;
+}
+
+.overlay {
+   position:absolute;
+   inset:0;
+   background:rgba(0,0,0,0.35);
+}
+
+.logo {
+   position:absolute;
+   top:25px;
+   left:35px;
+   font-size:45px;
+   font-weight:bold;
+   background:#c90000;
+   padding:10px 20px;
+}
+
+.clock {
+   position:absolute;
+   top:25px;
+   right:35px;
+   font-size:45px;
+   background:rgba(0,0,0,0.6);
+   padding:10px 20px;
+}
+
+.weather {
+   position:absolute;
+   top:110px;
+   right:35px;
+   font-size:25px;
+   background:rgba(0,0,0,0.6);
+   padding:10px 20px;
+}
+
+.rssbar {
+   position:absolute;
+   bottom:0;
+   width:100%;
+   height:70px;
+   background:#c90000;
+   overflow:hidden;
+   display:flex;
+   align-items:center;
+}
+
+.rss {
+   white-space:nowrap;
+   font-size:32px;
+   animation:defile 35s linear infinite;
+}
+
+@keyframes defile {
+   from {transform:translateX(100%);}
+   to {transform:translateX(-100%);}
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="overlay"></div>
+
+<div class="logo">VERDUN INFO</div>
+
+<div class="clock" id="clock"></div>
+
+<div class="weather">
+🌤️ Verdun 55100
+</div>
+
+<div class="rssbar">
+<div class="rss" id="rss">
+Chargement des actualités France Info...
+</div>
+</div>
+
+
+<script>
+
+function updateClock(){
+let d=new Date();
+document.getElementById("clock").innerHTML =
+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+}
+setInterval(updateClock,1000);
+updateClock();
+
+
+fetch("https://api.rss2json.com/v1/api.json?rss_url=https://www.francetvinfo.fr/titres.rss")
+.then(response=>response.json())
+.then(data=>{
+document.getElementById("rss").innerHTML =
+data.items.map(item=>item.title).join("  •  ");
+})
+.catch(()=>{
+document.getElementById("rss").innerHTML =
+"Actualités France Info indisponibles";
+});
+
+</script>
+
+</body>
+</html>
